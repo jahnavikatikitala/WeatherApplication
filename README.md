@@ -4,19 +4,8 @@ Services of this application are defined as docker containers and are runnable l
 Here are the pre-requisities before you try out the application:
 Create an account to access tomorrowAPI: https://docs.tomorrow.io/reference/welcome. Once you create an account, you can get the APIKey.
 
-List of services:
-1. Postgres
-Created a new postgres instance to initialize the weather information table and the location table. The component #2(Weather Information fetcher) connects to this database and pushes the information fetched from tomorrow.io api. The weather information table is created as a partitioned table which is partitioned by date. This allows for dropping older data easily by dropping the partition table if the scale grows. Currently, the Weather Information fetcher creates the partitions as well drops the older partitions, this can be moved to a different job(scheduler) - which runs on a daily basis to create new partitions and drops older partitions.
-
-2. Weather Information fetcher
-This application will get current and forecast information from tomorrow.io timeline API for locations present in 'weather.locations' table. The information is then published to postgres  updating previous entries and inserting new entries. Note that for this application, the forecast information is updated every hour.  
-
-3. Jupyter 
-The required libraries are available in the docker container to connect to postgres.  
-
-
 Steps to run the application:
-1. `docker-compose up --build`
+1. Checkout the git code and then run `docker-compose up --build`
 2. Click the jupyter url which can be accessed via localhost:8887 [link will show up in logs of above command]
 3. Connect to sql
 ```
@@ -51,6 +40,16 @@ WHERE rn = 1;
 ```
 %sql SELECT location, weather_date, (attributes->>'temperature')::numeric AS latest_temperature from weather.weather_hourly_forecast where weather_date >= timezone('utc', now()) - interval '1 day' and weather_date <= timezone('utc', now()) + interval '5 day' and location = '25.8600,-97.4200';
 ```
+
+List of services:
+1. Postgres
+Created a new postgres instance to initialize the weather information table and the location table. The component #2(Weather Information fetcher) connects to this database and pushes the information fetched from tomorrow.io api. The weather information table is created as a partitioned table which is partitioned by date. This allows for dropping older data easily by dropping the partition table if the scale grows. Currently, the Weather Information fetcher creates the partitions as well drops the older partitions, this can be moved to a different job(scheduler) - which runs on a daily basis to create new partitions and drops older partitions.
+
+2. Weather Information fetcher
+This application will get current and forecast information from tomorrow.io timeline API for locations present in 'weather.locations' table. The information is then published to postgres  updating previous entries and inserting new entries. Note that for this application, the forecast information is updated every hour.  
+
+3. Jupyter 
+The required libraries are available in the docker container to connect to postgres.  
 
 
 Rationale behind the design/technology choices:
