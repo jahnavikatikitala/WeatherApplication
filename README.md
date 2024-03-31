@@ -12,7 +12,8 @@ Steps to run the application:
 %load_ext sql
 %env DATABASE_URL=postgresql://username:postgrespassword@db/database
 ```
-4. Below are the list of queries that you can try out on Jupyter to test the application: 
+4. Below are the list of queries that you can try out on Jupyter to test the application:
+   
    a. To test the latest temperature and latest windspeed (let's say today's date is April 1st 2024, the latest temp will show you data for April 5th, 2024 and the latest hour that we could pull from tommorow.io) for all of the geo locations, you can run this query:
 ```
 %sql
