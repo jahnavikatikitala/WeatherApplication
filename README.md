@@ -18,10 +18,15 @@ The required libraries are available in the docker container to connect to postg
 Steps to run the application:
 1. `docker-compose up --build`
 2. Click the jupyter url which can be accessed via localhost:8887 [link will show up in logs of above command]
-3. Below are the list of queries that you can try out on Jupyter: 
+3. Connect to sql
+```
+%load_ext sql
+%env DATABASE_URL=postgresql://username:postgrespassword@db/database
+```
+4. Below are the list of queries that you can try out on Jupyter to test the application: 
    a. To test the latest temperature and latest windspeed (let's say today's date is April 1st 2024, the latest temp will show you data for April 5th, 2024 and the latest hour that we could pull from tommorow.io) for all of the geo locations, you can run this query:
-   ```
-   %%sql
+```
+%sql
 SELECT location,
        weather_date AS latest_weather_date,
        (attributes->>'temperature')::numeric AS latest_temperature,
@@ -35,17 +40,17 @@ FROM (
     WHERE location = '25.8600, -97.4200'
 ) AS subquery
 WHERE rn = 1;
-   ```
+```
 
  b. To test the latest temperature and latest windspeed: (Say today is April 1st 10:25AM, it retrieves the data for April 1st 10:00AM) for all of the geo locations, you can run this query. By current :
-   ```
+```
 %sql SELECT location, weather_date, (attributes->>'temperature')::numeric AS latest_temperature, (attributes->>'windSpeed')::numeric as windSpeed from weather.weather_hourly_forecast where weather_date = DATE_TRUNC('HOUR', timezone('utc', now()));
-   ```
+```
 
    c. To see an hourly time series of temperature from a day ago to 5 days in the future for a selected location, run this query:
-   ```
+```
 %sql SELECT location, weather_date, (attributes->>'temperature')::numeric AS latest_temperature from weather.weather_hourly_forecast where weather_date >= timezone('utc', now()) - interval '1 day' and weather_date <= timezone('utc', now()) + interval '5 day' and location = '25.8600,-97.4200';
-   ```
+```
 
 
 Rationale behind the design/technology choices:
