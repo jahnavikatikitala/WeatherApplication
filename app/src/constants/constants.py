@@ -1,0 +1,4 @@
+DATABASE_NAME = ""
+USERNAME = ""
+PASSWORD = ""
+API_KEY = ""
